@@ -28,15 +28,27 @@ mm_get_new_pages_from_kernel(int units){
 	return (void *)vm_pages;
 }
 
-int main() {
+static void
+mm_return_vm_page_to_kernel (void *vm_page, int units){
+	if(munmap(vm_page, units * SYSTEM_PAGE_SIZE)){
+		printf("Error: Could not munmap to kernel");
+	}
+
+}
+
+int 
+main(int argc, char **argv) {
     mm_init();
 
-    void* ptr = mm_get_new_pages_from_kernel(1);
+    printf("VM page size: %lu\n", SYSTEM_PAGE_SIZE);
+    void* addr1 = mm_get_new_pages_from_kernel(1);
+    void* addr2 = mm_get_new_pages_from_kernel(1);
+    printf("page 1 = %p, page 2 = %p\n", addr1, addr2);
 
-    if (ptr == MAP_FAILED) {
+    if (addr1 == MAP_FAILED) {
         printf("Allocation failed\n");
     } else {
-        printf("Allocated at %p\n", ptr);
+        printf("Allocated at %p\n", addr1);
     }
 
     return 0;
